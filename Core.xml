@@ -1114,7 +1114,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (setq god/core-screen (lambda nil (block (modules)
-    (dsf/new-screen 'god-core "G.O.D" 'custompicker)
+    (dsf/new-screen 'god-core "G.O.D")
     (dsf/set-no-back true)
 
     ;; add all the modules
@@ -1165,17 +1165,6 @@
           (scrAddAction gScreen 'godmod 3 "Galactic Omni Device" 'G (god/core-screen))
         )
       </OnGlobalPaneInit>
-      <!-- XXX This is a hack until #632 is fixed -->
-      <OnGlobalUniverseCreated>
-        (block ((items (list)))
-          (enum (typFind "i") itm
-            (if (not (itmIsKnown (itmCreate itm 1)))
-              (lnkAppend items itm)
-            )
-          )
-          (typSetGlobalData &stGODCoreStation; "IdentifiableItems" items)
-        )
-      </OnGlobalUniverseCreated>
     </Events>
   </StationType>
 
@@ -1449,7 +1438,7 @@
 
               (if known
                 (block nil
-                  (itmSetKnown itm nil)
+                  (dbgLog (itmSetKnown itm nil))
                   (dsf/notify "Unidentified Item")
                 )
                 (block nil
@@ -1474,10 +1463,10 @@
             ))
           )
         ))
-        ;; XXX this can be changed once #632 is updated
+        (dsf/set-no-save 'toggle-identify)
         (dsf/set-disable-action 'toggle-identify (lambda nil
           (block ((itm (dsf/get-item)))
-            (and (itmIsKnown itm) (not (find (typGetGlobalData &stGODCoreStation; "IdentifiableItems") (itmGetType itm))))
+            (and (itmIsKnown itm) (not (typGetDataField (itmGetType itm) "unknownType")))
           )
         ))
       )
