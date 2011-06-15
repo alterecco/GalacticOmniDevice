@@ -1224,7 +1224,7 @@
           (if systems (block (next)
             (setq next (item systems 0))
             ;; remove it from the list
-            (lnkRemove systems 0 nil)
+            (lnkRemove systems 0)
             ;; update it on global data
             (if (not systems) (block nil
               (setq systems nil)
@@ -1453,7 +1453,7 @@
                   ;; item was known... remove it from the item list (if present)
                   (block (pos)
                     (if (setq pos (find items itm))
-                      (lnkRemove items pos nil)
+                      (lnkRemove items pos)
                     )
                   )
                 )

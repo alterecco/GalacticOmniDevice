@@ -253,7 +253,7 @@
           (setq unit (dsf/get-list-entry 'unit))
 
           (setq index (find units unit))
-          (lnkRemove units index nil)
+          (lnkRemove units index)
 
           (fn/delete squads (list id 'units))
           (enum units unit
