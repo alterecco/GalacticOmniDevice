@@ -517,7 +517,7 @@
         (block nil
 
           (dsf/new-screen 'travel-system "Travel System")
-          (dsf/screen-set 'default-filter-term "TAMF")
+          (dsf/screen-set 'default-filter-term "/TAMF")
           (dsf/object-browser)
 
           (dsf/add-action 'jump '("Select" 'S) (lambda nil
