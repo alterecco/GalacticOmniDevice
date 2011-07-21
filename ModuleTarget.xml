@@ -6,7 +6,7 @@
     (block (module)
 
     (setq module (list
-      '((weight     2)
+      '((weight     6)
         (title      "Target")
         (subtitle   "Do various things to your current target")
         (hide       (not (objGetTarget gPlayerShip)))

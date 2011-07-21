@@ -60,9 +60,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       1)
+    (weight       3)
     (title        "Refuel")
-    (subtitle     "Refuel your reactor.\nIf it is not fully refueled, contact me!")
+    ; (subtitle     "Refuel your reactor.\nIf it is not fully refueled, contact me!")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
         (god/refuel-player)
@@ -78,15 +78,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       1)
+    (weight       3)
     (title        "Restore Player")
-    (subtitle     (cat
-      "Restore your ship.\n"
-      "Refuel, fix damage/items, remove negative states, "
-      "reset Domina powers and various timers, "
-      "fix bad ranks and standings.\n"
-      "Credits for this function goes to PM from Transcendence Forums!"
-    ))
+    ;(subtitle     (cat
+    ;  "Restore your ship.\n"
+    ;  "Refuel, fix damage/items, remove negative states, "
+    ;  "reset Domina powers and various timers, "
+    ;  "fix bad ranks and standings.\n"
+    ;  "Credits for this function goes to PM from Transcendence Forums!"
+    ;))
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
         (god/restore-target gPlayerShip)
@@ -98,13 +98,117 @@
   ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
+;;;; {{{ MODULE - MAP SYSTEM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (lnkAppend god/modules '(
+    (weight       3)
+    (title        "Map System")
+    ; (subtitle     "Reveal location on map of every station in the current system")
+    (on-select    (block nil
+      (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
+        (enum (sysFindObject gSource "Ts") obj
+            (objSetKnown obj)
+        )
+        (dsf/notify "Mapped system")
+      )))
+      (dsf/set-default-action 'select)
+      (dsf/set-disable-action 'select '(dsf/list-is-empty))
+    ))
+  ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
+;;;; {{{ MODULE - BROWSE ITEMS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (lnkAppend god/modules '(
+    (weight       3)
+    (title        "Browse Items")
+    ; (subtitle     "Browse and search all items in game. Add some to your cargo hold, or install them directly. All items will be identified while browsing.")
+    (on-select    (block nil
+      (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
+        (dsf/new-screen 'item-browser "Item Browser")
+        (dsf/screen-set 'identify-items true)
+        (god/item-browser "/*")
+        (dsf/show-screen)
+      )))
+      (dsf/set-default-action 'select)
+      (dsf/set-disable-action 'select '(dsf/list-is-empty))
+    ))
+  ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
+;;;; {{{ MODULE - REMOVE DEVICE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (lnkAppend god/modules '(
+    (weight       3)
+    (title        "Remove Device")
+    ; (subtitle     "Remove any device you have installed on your ship")
+    (on-select    (block nil
+      (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
+        (setq gMargin 0)
+        (scrShowScreen gScreen "&dsRemoveDevice;")
+      )))
+      (dsf/set-default-action 'select)
+      (dsf/set-disable-action 'select '(dsf/list-is-empty))
+    ))
+  ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
+;;;; {{{ MODULE - INSTALL DEVICE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (lnkAppend god/modules '(
+    (weight       3)
+    (title        "Install Device")
+    ; (subtitle     "Install any device you have in your cargo hold. You can choose between installing it in the regular way, or forcefully")
+    (on-select    (block nil
+      (dsf/add-action 'select '("Select" 'S) (lambda nil
+        (god/install-device))
+      )
+      (dsf/set-default-action 'select)
+      (dsf/set-disable-action 'select '(dsf/list-is-empty))
+    ))
+  ))
+
+  (setq god/install-device (lambda nil
+    (block nil
+      (dsf/new-screen 'install-device "Install Device" 'itempicker)
+      (dsf/set-item-filter "dUN")
+
+      (dsf/add-action 'force '("Force Install" 'F) (lambda nil (block (result)
+        (setq result (god/install-item (dsf/get-item) nil true))
+        (dsf/notify (item result 1))
+      )))
+      (dsf/set-default-action 'select)
+      (dsf/set-no-save 'force true)
+      (dsf/set-disable-action 'force '(dsf/list-is-empty))
+
+      (dsf/add-action 'normal '("Normal Install" 'N) (lambda nil (block (result)
+        (setq result (god/install-item (dsf/get-item) true true))
+        (dsf/notify (item result 1))
+      )))
+      (dsf/set-no-save 'normal true)
+      (dsf/set-disable-action 'normal '(dsf/list-is-empty))
+
+      (dsf/add-action 'add '("Add More Devices" 'A) (lambda nil (block nil
+        (dsf/new-screen 'device-browser "Device Browser")
+        (god/item-browser "d")
+        (dsf/show-screen)
+      )))
+      (dsf/show-screen)
+    )
+  ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
 ;;;; {{{ MODULE - SPAWN SHIPS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
     (weight       3)
     (title        "Spawn Ships")
-    (subtitle     "Browse and spawn any ship in game. Make them your friends, enemies or wingmen")
+    ; (subtitle     "Browse and spawn any ship in game. Make them your friends, enemies or wingmen")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
         (dsf/spawn-ships)
@@ -293,7 +397,7 @@
   (lnkAppend god/modules '(
     (weight       3)
     (title        "Spawn Stations")
-    (subtitle     "Browse and spawn any station in the game")
+    ; (subtitle     "Browse and spawn any station in the game")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil
         (block (stations spawn)
@@ -440,33 +544,13 @@
   ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
-;;;; {{{ MODULE - BROWSE ITEMS
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  (lnkAppend god/modules '(
-    (weight       2)
-    (title        "Browse Items")
-    (subtitle     "Browse and search all items in game. Add some to your cargo hold, or install them directly. All items will be identified while browsing.")
-    (on-select    (block nil
-      (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
-        (dsf/new-screen 'item-browser "Item Browser")
-        (dsf/screen-set 'identify-items true)
-        (god/item-browser "/*")
-        (dsf/show-screen)
-      )))
-      (dsf/set-default-action 'select)
-      (dsf/set-disable-action 'select '(dsf/list-is-empty))
-    ))
-  ))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
 ;;;; {{{ MODULE - TRAVEL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight     2)
+    (weight     3)
     (title      "Travel Galaxy")
-    (subtitle   "Journey instantly to another system in this galaxy")
+    ; (subtitle   "Journey instantly to another system in this galaxy")
     (on-select  (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil
         (block ((systems (sysGetNodes))
@@ -522,9 +606,9 @@
   ))
 
   (lnkAppend god/modules '(
-    (weight     1)
+    (weight     3)
     (title      "Travel Current System")
-    (subtitle   "Journey instantly to another place in this system")
+    ; (subtitle   "Journey instantly to another place in this system")
     (on-select  (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil
         (block nil
@@ -572,77 +656,13 @@
 ;  ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
-;;;; {{{ MODULE - INSTALL DEVICE
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  (lnkAppend god/modules '(
-    (weight       5)
-    (title        "Install Device")
-    (subtitle     "Install any device you have in your cargo hold. You can choose between installing it in the regular way, or forcefully")
-    (on-select    (block nil
-      (dsf/add-action 'select '("Select" 'S) (lambda nil
-        (god/install-device))
-      )
-      (dsf/set-default-action 'select)
-      (dsf/set-disable-action 'select '(dsf/list-is-empty))
-    ))
-  ))
-
-  (setq god/install-device (lambda nil
-    (block nil
-      (dsf/new-screen 'install-device "Install Device" 'itempicker)
-      (dsf/set-item-filter "dUN")
-
-      (dsf/add-action 'force '("Force Install" 'F) (lambda nil (block (result)
-        (setq result (god/install-item (dsf/get-item) nil true))
-        (dsf/notify (item result 1))
-      )))
-      (dsf/set-default-action 'select)
-      (dsf/set-no-save 'force true)
-      (dsf/set-disable-action 'force '(dsf/list-is-empty))
-
-      (dsf/add-action 'normal '("Normal Install" 'N) (lambda nil (block (result)
-        (setq result (god/install-item (dsf/get-item) true true))
-        (dsf/notify (item result 1))
-      )))
-      (dsf/set-no-save 'normal true)
-      (dsf/set-disable-action 'normal '(dsf/list-is-empty))
-
-      (dsf/add-action 'add '("Add More Devices" 'A) (lambda nil (block nil
-        (dsf/new-screen 'device-browser "Device Browser")
-        (god/item-browser "d")
-        (dsf/show-screen)
-      )))
-      (dsf/show-screen)
-    )
-  ))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
-;;;; {{{ MODULE - REMOVE DEVICE
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  (lnkAppend god/modules '(
-    (weight       5)
-    (title        "Remove Device")
-    (subtitle     "Remove any device you have installed on your ship")
-    (on-select    (block nil
-      (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
-        (setq gMargin 0)
-        (scrShowScreen gScreen "&dsRemoveDevice;")
-      )))
-      (dsf/set-default-action 'select)
-      (dsf/set-disable-action 'select '(dsf/list-is-empty))
-    ))
-  ))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
 ;;;; {{{ MODULE - REPAIR / REPLACE ARMOR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       5)
+    (weight       3)
     (title        "Repair or Replace Armor")
-    (subtitle     "Fix up your armor, or replace segments")
+    ; (subtitle     "Fix up your armor, or replace segments")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
         (setq gTechLevel 15)
@@ -660,9 +680,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       5)
+    (weight       3)
     (title        "Repair Item")
-    (subtitle     "Fix any item that needs fixing")
+    ; (subtitle     "Fix any item that needs fixing")
     (hide         (block ((do-hide true))
       (objEnumItems gPlayerShip itm
         (if (itmIsDamaged itm) (setq do-hide nil))
@@ -694,9 +714,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       5)
+    (weight       3)
     (title        "Damage Item")
-    (subtitle     "Damage an item... just because")
+    ; (subtitle     "Damage an item... just because")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
         (dsf/new-screen 'repair-item "Repair Item" 'itempicker)
@@ -718,33 +738,13 @@
   ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
-;;;; {{{ MODULE - MAP SYSTEM
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  (lnkAppend god/modules '(
-    (weight       5)
-    (title        "Map System")
-    (subtitle     "Reveal location on map of every station in the current system")
-    (on-select    (block nil
-      (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
-        (enum (sysFindObject gSource "Ts") obj
-            (objSetKnown obj)
-        )
-        (dsf/notify "Mapped system")
-      )))
-      (dsf/set-default-action 'select)
-      (dsf/set-disable-action 'select '(dsf/list-is-empty))
-    ))
-  ))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
 ;;;; {{{ MODULE - LOOT ALL
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       6)
+    (weight       3)
     (title        "Loot All")
-    (subtitle     "Loot all items in wrecks within a certain radius in ls\n(Note: this does not respect your cargo limit)")
+    ; (subtitle     "Loot all items in wrecks within a certain radius in ls\n(Note: this does not respect your cargo limit)")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
         (if (eq (dsf/get-pane) 'counter)
@@ -781,9 +781,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       6)
+    (weight       3)
     (title        "Jettison All")
-    (subtitle     "Jettison all items in your hold")
+    ; (subtitle     "Jettison all items in your hold")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block (items)
         (if (setq items (objGetItems gPlayerShip "*U"))
@@ -808,9 +808,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       6)
+    (weight       3)
     (title        "Banking - Deposit Credits")
-    (subtitle     "Add credits to your account")
+    ; (subtitle     "Add credits to your account")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
         (if (eq (dsf/get-pane) 'counter)
@@ -835,9 +835,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       6)
+    (weight       3)
     (title        "Banking - Withdraw Credits")
-    (subtitle     "Remove credits from your account")
+    ; (subtitle     "Remove credits from your account")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block (mx)
         (setq mx (plyGetCredits gPlayer))
@@ -863,9 +863,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       6)
+    (weight       3)
     (title        "Banking - Deposit Rins")
-    (subtitle     "Add rins to your account")
+    ; (subtitle     "Add rins to your account")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block (rins)
         (setq rins (or (objGetData gPlayerShip 'rins) 0))
@@ -892,9 +892,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       6)
+    (weight       3)
     (title        "Banking - Withdraw Rins")
-    (subtitle     "Remove rins from your account")
+    ; (subtitle     "Remove rins from your account")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil (block (rins)
         (setq rins (objGetData gPlayerShip 'rins))
@@ -921,9 +921,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight       6)
+    (weight       3)
     (title        "Player Data")
-    (subtitle     "View and change data stored about the player")
+    ; (subtitle     "View and change data stored about the player")
     (on-select    (block nil
       (dsf/add-action 'select '("Select" 'S) (lambda nil
         (god/player-data)
@@ -1092,7 +1092,7 @@
   (lnkAppend god/modules '(
     (weight     9)
     (title      "Time Stop")
-    (subtitle   "Stop time or start it again. Great for taking a look around")
+    ; (subtitle   "Stop time or start it again. Great for taking a look around")
     (on-select  (block nil
       (dsf/add-action 'toggle-time
         (lambda nil (block (state)
@@ -1153,6 +1153,7 @@
     )))
 
     (dsf/filter-screen)
+    (dsf/set-type 'custompicker-compact)
     (dsf/show-screen)
   )))
 

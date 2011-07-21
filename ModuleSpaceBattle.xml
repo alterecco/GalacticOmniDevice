@@ -7,7 +7,7 @@
   (setq module (list
     '((weight       4)
       (title        "Space Battle")
-      (subtitle     "Create massive space battles, if that is your thing")
+      ; (subtitle     "Create massive space battles, if that is your thing")
       (on-select  (block nil
         (dsf/add-action 'select '("Select" 'S) (lambda nil
           (god/battle-overview)
