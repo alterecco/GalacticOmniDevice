@@ -4,7 +4,6 @@
     <!ENTITY modGODCore                 "0xDCBA0500">
 
     <!ENTITY stGODCoreStation           "0xDCBA0501">
-    <!ENTITY ovGODTimeStop              "0xDCBA0502">
     <!ENTITY stGODTravelStation         "0xDCBA0503">
 
     <!ENTITY svGODFriendly              "0xDCBA0504">
@@ -1097,21 +1096,21 @@
     (on-select  (block nil
       (dsf/add-action 'toggle-time
         (lambda nil (block (state)
-          (setq state (typGetGlobalData &ovGODTimeStop; 'keep-running))
+          (setq state (typGetGlobalData &stGODCoreStation; 'timestop))
           (if state
             (list "Start Time" 'S)
             (list "Stop Time" 'S)
           )
         ))
         (lambda nil (block (state)
-          (setq state (typGetGlobalData &ovGODTimeStop; 'keep-running))
+          (setq state (typGetGlobalData &stGODCoreStation; 'timestop))
           (if state
             (block nil
-              (typSetGlobalData &ovGODTimeStop; 'keep-running nil)
+              (typSetGlobalData &stGODCoreStation; 'timestop nil)
               (dsf/notify "Started time")
             )
             (block nil
-              (typSetGlobalData &ovGODTimeStop; 'keep-running true)
+              (typSetGlobalData &stGODCoreStation; 'timestop true)
               (dsf/notify "Stopped time")
             )
           )
@@ -1142,17 +1141,14 @@
     ))
 
     ;; timestop handlers
-    (dsf/on-screen-init (lambda nil
-      (if (not (typGetGlobalData &ovGODTimeStop; 'running))
-        (typSetGlobalData &ovGODTimeStop; 'running (objAddOverlay gPlayerShip &ovGODTimeStop;))
-      )
-    ))
-    (dsf/on-global-exit (lambda nil (block (oID keep)
-      (setq oID (typGetGlobalData &ovGODTimeStop; 'running))
-      (setq keep (typGetGlobalData &ovGODTimeStop; 'keep-running))
-      (if (and (not keep) oID) (block nil
-        (objRemoveOverlay gPlayerShip oID)
-        (typSetGlobalData &ovGODTimeStop; 'running nil)
+    (dsf/on-screen-init (lambda nil (block nil
+        (sysStartTime)
+        (sysStopTime nil gPlayerShip)
+    )))
+    (dsf/on-global-exit (lambda nil (block (keep)
+      (setq keep (typGetGlobalData &stGODCoreStation; 'timestop))
+      (if (not keep) (block nil
+        (sysStartTime)
       ))
     )))
 
@@ -1181,14 +1177,6 @@
       </OnGlobalPaneInit>
     </Events>
   </StationType>
-
-  <OverlayType UNID="&ovGODTimeStop;">
-    <Events>
-      <OnUpdate>
-        (sysStopTime 30 gPlayerShip)
-      </OnUpdate>
-    </Events>
-  </OverlayType>
 
   <StationType UNID="&stGODTravelStation;">
     <Events>
