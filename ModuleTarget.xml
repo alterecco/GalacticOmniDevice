@@ -8,7 +8,7 @@
     (setq module (list
       '((weight     6)
         (title      "Target")
-        (subtitle   "Do various things to your current target")
+        ; (subtitle   "Do various things to your current target")
         (hide       (not (objGetTarget gPlayerShip)))
         (on-select  (block nil
           (dsf/add-action 'select '('Select 'S) (lambda nil
@@ -169,15 +169,30 @@
           '((title      "Attack")
             (subtitle   "Order ship to attack a target you designate")
             (run        (block nil
-              (dsf/new-screen 'tmp "Order Attack")
+              (dsf/new-screen 'target-order-attack "Order Attack")
               (dsf/screen-set 'filter-source (objGetTarget gPlayerShip))
-              (dsf/screen-set 'default-filter-term "sTE")
+              (dsf/screen-set 'default-filter-term "/sTE")
               (dsf/object-browser)
+              ;; add a list filter to show distance and order by distance
+              (dsf/add-list-filter (lambda (entries)
+                (block nil
+                  (enum entries entry (block (dist)
+                    (setq dist (objGetDistance gPlayerShip (fn/get entry 'obj)))
+                    (fn/set entry 'dist dist)
+                    (fn/set entry 'subtitle (cat "Distance: " dist " ls"))
+                  ))
+                  (fn/sort entries a b (ls (fn/get a 'dist) (fn/get b 'dist)))
+                )
+              ))
+              (dsf/set-description (lambda (desc)
+                (cat desc ", ordered by distance.")
+              ))
               (dsf/add-action 'attack '("Attack" 'A) (lambda nil
                 (block (t)
                   (setq t (objGetTarget gPlayerShip))
                   (shpCancelOrders t)
                   (shpOrder t 'attack (dsf/get-list-entry 'obj))
+                  (dsf/notify "Ordered Attack")
                   (dsf/show-screen 'target-orders)
                 )
               ))
