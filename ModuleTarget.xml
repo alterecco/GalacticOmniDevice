@@ -28,7 +28,7 @@
       (dsf/new-screen 'target-screen "Target Actions")
 
       (dsf/add-list-entries (list
-        '((title      "Restore")
+        '((title      "Restore Target")
           (subtitle   "Completely restore target")
           (on-select  (block (target)
             (if (setq target (objGetTarget gPlayerShip)) (block nil
@@ -143,6 +143,7 @@
       ))
 
       (dsf/filter-screen)
+      (dsf/set-type 'custompicker-small)
       (dsf/show-screen)
     )))
 
@@ -153,7 +154,7 @@
     ;; TODO: add posibility of making an order queue
     (setq god/target-orders (lambda (obj)
       (block nil
-        (dsf/new-screen 'target-orders "Target Orders" 'custompicker)
+        (dsf/new-screen 'target-orders "Target Orders")
 
         (dsf/set-description (lambda (desc) (block (order target)
           (setq order (shpGetOrder obj))
@@ -293,6 +294,8 @@
         ;(dsf/screen 'order-distance "Set Order Distance")
         ;(dsf/pane 'counter)
 
+        (dsf/filter-screen)
+        (dsf/set-type 'custompicker-small)
         (dsf/show-screen 'target-orders)
       )
     ))
