@@ -181,7 +181,7 @@
         (setq result (god/install-item (dsf/get-item) nil true))
         (dsf/notify (item result 1))
       )))
-      (dsf/set-default-action 'select)
+      (dsf/set-default-action 'force)
       (dsf/set-no-save 'force true)
       (dsf/set-disable-action 'force '(dsf/list-is-empty))
 
