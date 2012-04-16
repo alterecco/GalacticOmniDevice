@@ -138,24 +138,6 @@
   ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
-;;;; {{{ MODULE - REMOVE DEVICE
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  (lnkAppend god/modules '(
-    (weight       3)
-    (title        "Remove Device")
-    ; (subtitle     "Remove any device you have installed on your ship")
-    (on-select    (block nil
-      (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
-        (setq gMargin 0)
-        (scrShowScreen gScreen "&dsRemoveDevice;")
-      )))
-      (dsf/set-default-action 'select)
-      (dsf/set-disable-action 'select '(dsf/list-is-empty))
-    ))
-  ))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
 ;;;; {{{ MODULE - INSTALL DEVICE
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -199,6 +181,24 @@
       )))
       (dsf/show-screen)
     )
+  ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
+;;;; {{{ MODULE - REMOVE DEVICE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (lnkAppend god/modules '(
+    (weight       3)
+    (title        "Remove Device")
+    ; (subtitle     "Remove any device you have installed on your ship")
+    (on-select    (block nil
+      (dsf/add-action 'select '("Select" 'S) (lambda nil (block nil
+        (setq gMargin 0)
+        (scrShowScreen gScreen "&dsRemoveDevice;")
+      )))
+      (dsf/set-default-action 'select)
+      (dsf/set-disable-action 'select '(dsf/list-is-empty))
+    ))
   ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
