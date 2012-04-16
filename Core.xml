@@ -1173,7 +1173,7 @@
     <Events>
       <OnGlobalPaneInit>
         (if (and (eq aScreenUNID &dsShipInterior;) (eq aPane "Default"))
-          (scrAddAction gScreen 'godmod 3 "Galactic Omni Device" 'G (god/core-screen))
+          (scrAddAction gScreen 'godmod nil "Galactic Omni Device" 'G (god/core-screen))
         )
       </OnGlobalPaneInit>
     </Events>
