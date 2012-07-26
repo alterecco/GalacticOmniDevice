@@ -19,7 +19,7 @@
       )
     ))
 
-    (setq god/modules (if (isError god/modules)
+    (setq god/modules (if (iserror god/modules)
       module
       (append god/modules module)
     ))

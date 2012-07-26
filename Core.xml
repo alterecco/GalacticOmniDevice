@@ -38,7 +38,7 @@
   ;;; We define it like this, since we allow for other
   ;;; files to append their modules as well.
   ;;; Basically it is data to be used for a custompicker list
-  (setq god/modules (if (isError god/modules)
+  (setq god/modules (if (iserror god/modules)
     (list)
     god/modules
   ))
