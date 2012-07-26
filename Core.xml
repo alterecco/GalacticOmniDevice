@@ -21,17 +21,6 @@
   credits="alterecco"
   version="1.1">
 
-<!--
-
-  Bugs:
-    Wolfy 12/1/2011
-      On Replace Armor screen:
-        "No binding for symbol gCheckMilitaryID ###(and gCheckMilitaryID (itmHasModifier..."
-      Spawn Objects
-        - Add more info in subtitle?
-
--->
-
   <Modules>
     <Module filename="ModuleTarget.xml"/>
     <Module filename="ModuleEnhancements.xml"/>
