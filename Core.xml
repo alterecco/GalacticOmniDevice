@@ -2,6 +2,7 @@
 <!DOCTYPE TranscendenceExtension
 [
     <!ENTITY modGODCore                 "0xDCBA0500">
+    <!ENTITY modDSFLib                  "0xDCBA0600">
 
     <!ENTITY stGODCoreStation           "0xDCBA0501">
     <!ENTITY stGODTravelStation         "0xDCBA0503">
@@ -20,6 +21,8 @@
   name="Galactic Omni Device"
   credits="alterecco"
   version="1.1">
+
+  <Library unid="&modDSFLib;"/>
 
   <Modules>
     <Module filename="ModuleTarget.xml"/>
