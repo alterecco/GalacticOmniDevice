@@ -81,7 +81,8 @@ TODO
               (dsf/add-action 'remove '("Remove" 'R) (lambda nil
                 (block (itm)
                   (setq itm (dsf/get-item))
-                  (shpDamageItem gPlayerShip itm)
+                  ;; FIXME does this still work??
+                  (objSetItemProperty gPlayerShip itm 'damaged)
                   (dsf/notify "Unenhanced Item")
                   (dsf/show-screen)
                 )
