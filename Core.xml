@@ -1492,7 +1492,7 @@
         (if (objIsShip target) (block nil
           ;; fix states
           (objFixParalysis target)
-          (shpFixBlindness target)
+          (objChangeEquipmentStatus target 'SRS 'repair)
           (shpDecontaminate target)
 
           ;; repair shields
