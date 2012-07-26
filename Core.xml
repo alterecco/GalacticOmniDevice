@@ -1047,21 +1047,21 @@
           (list 'func       (lambda (arg) (objSetData gPlayerShip 'tualiSymbiote arg)))
         )
         (list
-          (list 'title      (lambda nil (cat "DominaLevel: " (typGetGlobalData &stDomina; "level"))))
+          (list 'title      (lambda nil (cat "DominaLevel: " (typGetData &stDomina; "level"))))
           (list 'subtitle   "Your current domina Level")
-          (list 'func       (lambda (arg) (typSetGlobalData &stDomina; "level" arg)))
+          (list 'func       (lambda (arg) (typSetData &stDomina; "level" arg)))
         )
         (list
-          (list 'title      (lambda nil (cat "DominaXP: " (typGetGlobalData &stDomina; "xp"))))
+          (list 'title      (lambda nil (cat "DominaXP: " (typGetData &stDomina; "xp"))))
           (list 'subtitle   "Domina XP")
-          (list 'func       (lambda (arg) (typSetGlobalData &stDomina; "xp" arg)))
+          (list 'func       (lambda (arg) (typSetData &stDomina; "xp" arg)))
         )
       ))
       ;; add the domina powers' last invoke time
       (for i 1 6 (dsf/add-list-entry (list
-        (list 'title        (lambda nil (cat "LastInvokeTime" i ": " (typGetGlobalData &stDomina; (cat "lastInvokeTime" i)))))
+        (list 'title        (lambda nil (cat "LastInvokeTime" i ": " (typGetData &stDomina; (cat "lastInvokeTime" i)))))
         (list 'subtitle     (cat "Last time a lvl " i " power was invoked."))
-        (list 'func         (lambda (arg) (typSetGlobalData &stDomina; (cat "lastInvokeTime" i) arg)))
+        (list 'func         (lambda (arg) (typSetData &stDomina; (cat "lastInvokeTime" i) arg)))
       )))
 
       (dsf/add-action 'modify '("Modify" 'M) (lambda nil
@@ -1098,21 +1098,21 @@
     (on-select  (block nil
       (dsf/add-action 'toggle-time
         (lambda nil (block (state)
-          (setq state (typGetGlobalData &stGODCoreStation; 'timestop))
+          (setq state (typGetData &stGODCoreStation; 'timestop))
           (if state
             (list "Start Time" 'S)
             (list "Stop Time" 'S)
           )
         ))
         (lambda nil (block (state)
-          (setq state (typGetGlobalData &stGODCoreStation; 'timestop))
+          (setq state (typGetData &stGODCoreStation; 'timestop))
           (if state
             (block nil
-              (typSetGlobalData &stGODCoreStation; 'timestop nil)
+              (typSetData &stGODCoreStation; 'timestop nil)
               (dsf/notify "Started time")
             )
             (block nil
-              (typSetGlobalData &stGODCoreStation; 'timestop true)
+              (typSetData &stGODCoreStation; 'timestop true)
               (dsf/notify "Stopped time")
             )
           )
@@ -1148,7 +1148,7 @@
         (sysStopTime nil gPlayerShip)
     )))
     (dsf/on-global-exit (lambda nil (block (keep)
-      (setq keep (typGetGlobalData &stGODCoreStation; 'timestop))
+      (setq keep (typGetData &stGODCoreStation; 'timestop))
       (if (not keep) (block nil
         (sysStartTime)
       ))
@@ -1185,7 +1185,7 @@
     <Events>
       <OnCreate>
         (block nil
-          (if (not (typGetGlobalData &stGODTravelStation; "Traveling"))
+          (if (not (typGetData &stGODTravelStation; "Traveling"))
             (block (current systems)
               (setq current (sysGetNode))
               (setq systems (sysGetNodes))
@@ -1202,13 +1202,13 @@
               ;; append the current system (so we end in it again)
               (lnkAppend systems current)
               ;; store the system list on the station (globally)
-              (typSetGlobalData &stGODTravelStation; "SystemList" systems)
+              (typSetData &stGODTravelStation; "SystemList" systems)
 
               ;; kill messages for the time being
               (plyRedirectMessage gPlayer true)
 
               ;; flag that we are traveling
-              (typSetGlobalData &stGODTravelStation; "Traveling" true)
+              (typSetData &stGODTravelStation; "Traveling" true)
             )
           )
           ;; fire the event
@@ -1216,7 +1216,7 @@
         )
       </OnCreate>
       <OnGlobalPlayerEnteredSystem>
-        (if (typGetGlobalData &stGODTravelStation; "Traveling")
+        (if (typGetData &stGODTravelStation; "Traveling")
           (sysCreateStation &stGODTravelStation; nil)
         )
       </OnGlobalPlayerEnteredSystem>
@@ -1225,7 +1225,7 @@
       </OnPlayerLeftSystem>
       <Travel>
         (block (systems)
-          (setq systems (typGetGlobalData &stGODTravelStation; "SystemList"))
+          (setq systems (typGetData &stGODTravelStation; "SystemList"))
           (if systems (block (next)
             (setq next (item systems 0))
             ;; remove it from the list
@@ -1233,10 +1233,10 @@
             ;; update it on global data
             (if (not systems) (block nil
               (setq systems nil)
-              (typSetGlobalData &stGODTravelStation; "Traveling" nil)
+              (typSetData &stGODTravelStation; "Traveling" nil)
               (plyRedirectMessage gPlayer nil)
             ))
-            (typSetGlobalData &stGODTravelStation; "SystemList" systems)
+            (typSetData &stGODTravelStation; "SystemList" systems)
             ;; actually travel
             (objGateTo gPlayerShip next (item (sysGetStargates next) 0) nil)
           ))
@@ -1506,12 +1506,12 @@
             (god/refuel-player)
 
             ;; fix domina and ranks
-            (typSetGlobalData &stDomina; "lastInvokeTime1" 0)
-            (typSetGlobalData &stDomina; "lastInvokeTime2" 0)
-            (typSetGlobalData &stDomina; "lastInvokeTime3" 0)
-            (typSetGlobalData &stDomina; "lastInvokeTime4" 0)
-            (typSetGlobalData &stDomina; "lastInvokeTime5" 0)
-            (typSetGlobalData &stDomina; "lastInvokeTime6" 0)
+            (typSetData &stDomina; "lastInvokeTime1" 0)
+            (typSetData &stDomina; "lastInvokeTime2" 0)
+            (typSetData &stDomina; "lastInvokeTime3" 0)
+            (typSetData &stDomina; "lastInvokeTime4" 0)
+            (typSetData &stDomina; "lastInvokeTime5" 0)
+            (typSetData &stDomina; "lastInvokeTime6" 0)
 
             ;; reset black market crime status
             (objSetData gPlayerShip "blackMarketCrime" nil)
@@ -1527,8 +1527,8 @@
             (objSetData gPlayerShip "ringerCrimeSeverity" nil)
 
             ;; fix Korolov standing if required
-            (if (eq (typGetGlobalData &stKorolovShipping; "level") -1)
-              (typSetGlobalData &stKorolovShipping; "level" 0)
+            (if (eq (typGetData &stKorolovShipping; "level") -1)
+              (typSetData &stKorolovShipping; "level" 0)
             )
 
           ))
