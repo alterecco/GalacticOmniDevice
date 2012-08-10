@@ -1116,7 +1116,80 @@
   ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
+;;;; {{{ MODULE - EQUIPMENT STATUS
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (lnkAppend god/modules '(
+    (weight     0)
+    (title      "Equipment Status")
+    ; (subtitle   "Change the status of built in equipment")
+    (on-select  (block nil
+      (dsf/add-action 'select '('Select 'S) (lambda nil
+        (god/equipment-status-screen)
+      ))
+      (dsf/set-default-action 'select)
+      (dsf/set-disable-action 'select '(dsf/list-is-empty))
+    ))
+  ))
+
+  (setq god/equipment-status-screen (lambda nil
+    (block (equipment commands statuses)
+      (dsf/new-screen 'target-screen "Equipment Status")
+      (dsf/filter-screen)
+
+      (setq equipment (list 
+        (list 'TargetingComputer "Targeting Computer")
+        (list 'GalacticMap "Galactic Map")
+        (list 'SystemMap "System Map")
+        (list 'Autopilot "Autopilot")
+        (list 'LRS "LRS")
+        (list 'SRS "SRS")
+        (list 'SRSEnhancer "SRS Enhancer")
+      ))
+      (setq commands (list
+        (list 'damage 'D "Damaged")
+        (list 'install 'I "Installed")
+        (list 'remove 'R "Removed")
+        (list 'repair 'P "Repaired")
+      ))
+      (setq statuses {
+        ready: "Ready"
+        notInstalled: "Not Installed"
+        damaged: "Damaged"
+      })
+
+      (enum equipment e (dsf/add-list-entry (list
+        (list 'title        (item e 1))
+        (list 'subtitle     (lambda nil (cat "Status: " (or (item statuses (objGetEquipmentStatus gPlayerShip (item e 0))) "Unknown"))))
+        (list 'on-select    (lambda nil (block (status)
+          (setq status (objGetEquipmentStatus gPlayerShip (item e 0)))
+          (enum commands c (block nil
+            (dsf/add-action (item c 0) (list (strCapitalize (item c 0)) (item c 1)) (lambda nil (block nil
+              (objChangeEquipmentStatus gPlayerShip (item e 0) (item c 0) nil nil)
+              (dsf/notify (cat (item c 2) " " (item e 1)))
+              (dsf/show-screen)
+            )))
+            (dsf/set-disable-action (item c 0) '(dsf/list-is-empty))
+            (dsf/set-no-save (item c 0))
+          ))
+          (if (eq status 'ready) (block nil
+            (dsf/set-disable-action 'install)
+            (dsf/set-disable-action 'repair)
+          ))
+          (if (eq status 'notInstalled) (block nil
+            (dsf/set-disable-action 'remove)
+            (dsf/set-disable-action 'repair)
+            (dsf/set-disable-action 'damage)
+          ))
+          (if (eq status 'damaged) (dsf/set-disable-action 'damage))
+        )))
+      )))
+      (dsf/set-type 'custompicker-small)
+      (dsf/show-screen)
+    )
+  ))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;}}}
 ;;;; {{{ CORE SCREEN
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
