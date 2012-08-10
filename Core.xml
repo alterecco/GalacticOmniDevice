@@ -1508,7 +1508,6 @@
 
               (if known
                 (block nil
-                  (dbgLog (itmSetKnown itm nil))
                   (dsf/notify "Unidentified Item")
                 )
                 (block nil
