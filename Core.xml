@@ -1120,7 +1120,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
   (lnkAppend god/modules '(
-    (weight     0)
+    (weight     3)
     (title      "Equipment Status")
     ; (subtitle   "Change the status of built in equipment")
     (on-select  (block nil
